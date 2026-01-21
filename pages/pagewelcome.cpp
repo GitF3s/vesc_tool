@@ -29,6 +29,7 @@
 #include <QSettings>
 #include <QmlHighlighter>
 #include <QQuickItem>
+#include <QQuickWidget>
 
 PageWelcome::PageWelcome(QWidget *parent) :
     QWidget(parent),
@@ -50,9 +51,8 @@ PageWelcome::PageWelcome(QWidget *parent) :
     mVesc = nullptr;
     ui->bgWidget->setPixmap(QPixmap("://res/bg.png"));
 
-    connect(ui->wizardFocSimpleButton, &QPushButton::clicked, [this]() {
-        QMetaObject::invokeMethod(ui->qmlWidget->rootObject(), "setupMotors");
-    });
+    connect(ui->wizardFocSimpleButton, &QPushButton::clicked,
+            this, &PageWelcome::startSetupWizardFocSimple);
 
     connect(ui->wizardAppButton, SIGNAL(clicked(bool)),
             this, SLOT(startSetupWizardApp()));
@@ -113,6 +113,17 @@ void PageWelcome::setVesc(VescInterface *vesc)
     ui->qmlWidget->engine()->rootContext()->setContextProperty("VescIf", mVesc);
     ui->qmlWidget->engine()->rootContext()->setContextProperty("QmlUi", this);
     ui->qmlWidget->engine()->rootContext()->setContextProperty("Utility", mUtil);
+
+    connect(ui->qmlWidget, &QQuickWidget::statusChanged, this, [this](QQuickWidget::Status status) {
+        if (status != QQuickWidget::Error) {
+            return;
+        }
+
+        const auto errs = ui->qmlWidget->errors();
+        for (const auto &e : errs) {
+            qWarning() << "WelcomeQmlPanel error:" << e.toString();
+        }
+    }, Qt::UniqueConnection);
 
     ui->qmlWidget->setSource(QUrl(QLatin1String("qrc:/res/qml/WelcomeQmlPanel.qml")));
 }

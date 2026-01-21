@@ -254,6 +254,8 @@ int main(int argc, char *argv[])
 #endif
     qmlRegisterType<Commands>("Vedder.vesc.commands", 1, 0, "Commands");
     qmlRegisterType<ConfigParams>("Vedder.vesc.configparams", 1, 0, "ConfigParams");
+    qmlRegisterType<Utility>("Vedder.vesc.utility", 1, 0, "UtilityType");
+    qmlRegisterType<VescInterface>("Vedder.vesc.vescinterface", 1, 0, "VescIfType");
     qmlRegisterType<FwHelper>("Vedder.vesc.fwhelper", 1, 0, "FwHelper");
     qmlRegisterType<Esp32Flash>("Vedder.vesc.esp32flash", 1, 0, "Esp32Flash");
     qmlRegisterType<TcpServerSimple>("Vedder.vesc.tcpserversimple", 1, 0, "TcpServerSimple");
